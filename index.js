@@ -1,14 +1,15 @@
-const {createClient} = require('redis') ;
+const { createClient } = require('redis');
 
-const REDIS_URL = 'lna-redis-frank.meoaje.0001.euc1.cache.amazonaws.com:6379';
+const REDIS_URL = 'redis://@redis-cache.meoaje.0001.euc1.cache.amazonaws.com:6379';
 
 exports.handler = async (event) => {
-    const client = createClient();
+    const client = createClient({
+        url: REDIS_URL
+
+    });
     client.on('error', (err) => console.log('Redis Client Error', err));
 
-    await client.connect({
-        url: REDIS_URL
-    });
+    await client.connect();
 
     console.log('connected');
 
@@ -17,7 +18,7 @@ exports.handler = async (event) => {
         nowDate = Date.now().toString();
         await client.set('nowDate', nowDate, { EX: 20 });
     }
-    console.log({nowDate})
+    console.log({ nowDate })
 
     const response = {
         statusCode: 200,
